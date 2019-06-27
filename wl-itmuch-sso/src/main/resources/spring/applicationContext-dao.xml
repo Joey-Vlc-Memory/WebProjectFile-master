@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--加载配置文件-->
+
+    <context:property-placeholder location="classpath*:db/*.properties"/>
+
+    <!--配置数据源连接池-->
+    
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="maxActive" value="10" /><!--maxActive-->
+        <property name="minIdle" value="5" />
+        <!--minId最大空闲数，数据库连接的最大空闲时间。超过空闲时间，数据库连
+            接将被标记为不可用，然后被释放。设为0表示无限制。
+            MaxActive，连接池的最大数据库连接数。设为0表示无限制。
+            maxWait ，最大建立连接等待时间。如果超过此时间将接到异常。设为-1表示
+         无限制。-->
+    </bean>
+
+    <!--配置sqlSessionFactory使用mybatis和spring整合包中的，其目的是为了让spring来管理-->
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+
+        <!--配置数据库连接池-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--加载Mybatis全局配置文件-->
+        <property name="configLocation" value="classpath:mappers/SqlMapConfig.xml"/>
+
+    </bean>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.osyunge.dao" />
+    </bean>
+
+</beans>
